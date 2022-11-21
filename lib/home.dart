@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:user_crud/controller/data_controller.dart';
+import 'package:user_crud/loading/custom_loading.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,29 +14,35 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final _controller = Get.find<Controller>();
+    final controller = Get.put(UserController());
+
     return Scaffold(
-      body: Obx(
-        () => _controller.isLoading.value
-            ? const CircularProgressIndicator()
-            : Center(
-                child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: ListView.builder(
-                      itemCount: _controller.userList.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          color: Colors.red,
-                          width: 100,
-                          height: 100,
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                              '${_controller.userList[0].data?.first.firstName}'),
-                        );
-                      },
-                    )),
-              ),
+      appBar: AppBar(
+        title: Text('Api Calling'),
       ),
+      body: Obx(() => controller.isLoading
+          ? const Center(
+              child: CustomLoadingAPI(),
+            )
+          : ListView.builder(
+              itemCount: controller.userModel.data.length,
+              itemBuilder: (_, index) {
+                return Card(
+                  elevation: 10,
+                  child: Container(
+                    height: 150,
+                    child: Column(
+                      children: [
+                        Text(
+                          controller.userModel.data.first.firstName.toString(),
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            )),
     );
   }
 }

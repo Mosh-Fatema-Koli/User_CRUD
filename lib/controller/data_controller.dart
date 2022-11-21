@@ -1,30 +1,40 @@
-import 'dart:convert';
-
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
+import 'package:user_crud/api_services.dart';
+import 'package:user_crud/logger/logger.dart';
 import 'package:user_crud/model/model.dart';
 
-class Controller extends GetxController {
-  var userList = <UserModel>[].obs;
-  var isLoading = true.obs;
+final log = logger(UserController);
 
+class UserController extends GetxController {
   @override
   void onInit() {
+    getUserData();
     super.onInit();
-    userData();
   }
 
-  Future<void> userData() async {
-    final response = await http.get(Uri.parse('https://reqres.in/api/users'));
+// api process
+  final _isLoading = false.obs;
 
-    if (response.statusCode == 200) {
-      UserModel _userModel = UserModel.fromJson(jsonDecode(response.body));
+  bool get isLoading => _isLoading.value;
 
-      isLoading.value = false;
+  late User _userModel;
+
+  User get userModel => _userModel;
+
+  // dashboard process function
+  Future<User> getUserData() async {
+    _isLoading.value = true;
+    update();
+
+    // calling api from api service
+    await ApiServices.userApi().then((value) {
+      _userModel = value!;
+      _isLoading.value = false;
       update();
-    } else {
-      Get.snackbar('Error Loading data!',
-          'Sever responded: ${response.statusCode}:${response.reasonPhrase.toString()}');
-    }
+    }).catchError((onError) {
+      log.e(onError);
+    });
+    update();
+    return _userModel;
   }
 }

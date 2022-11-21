@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:user_crud/controller_bindings.dart';
+import 'package:user_crud/controller_binding.dart';
 import 'package:user_crud/home.dart';
 
 void main() {
